@@ -157,6 +157,9 @@
     var active = false;
     var startTime = 0;
     var period = 0;
+    var save = 0;
+    var ontime = 0;
+    var restart_flag = false;
 
     
     // ボタンの初期設定
@@ -192,10 +195,15 @@
     // ButtonBがクリックされた時の処理
     function btnBClick(e){
       active = false;
+      save = parseInt( (new Date() - startTime)/1000 );             //その時点の経過時間を保存
     }
 
     // ButtonCがクリックされた時の処理
     function btnCClick(e){
+
+       $("#minuteStr").html( parseInt($("#minute").val()) + " 分");
+       $("#secondStr").html( parseInt($("#second").val()) + " 秒");
+
         alarm();
         active = false;
         period = 60* parseInt( $("#minute").val() ) + parseInt( $("#second").val() );
@@ -205,11 +213,14 @@
 
     function btnDClick(e){
       active = true;
+      ontime = save;
+      restart_flag = true;
+      /*
       if(period <= 0){
         var ontime =  parseInt( (new Date() - startTime)/1000 );  //経過時間を代入
         $("#time").html("経過時間 : " + ontime);
       }
-      active = false;
+      */
     }
     
  
@@ -217,12 +228,22 @@
     function timer(){
 
       if (active) {
-        var time = parseInt( (new Date() - startTime)/1000 );
-        var rest = period - time;
-        $("#time").html("経過時間： " + time);
-        $("#remain").html("残り時間： " + rest);
-        analog(rest);
+        if(restart_flag == true){
+          var time = ontime;
+          var rest = period - time;
+          $("#time").html("経過時間： " + time);
+          $("#remain").html("残り時間： " + rest);
+          analog(rest);
+        }else{
+           var time = parseInt( (new Date() - startTime)/1000 );
+           var rest = period - time;
+           $("#time").html("経過時間： " + time);
+           $("#remain").html("残り時間： " + rest);
+           analog(rest);
+        }
       }
+
+      restart_flag = false;
 
       if(rest <= 0){
         active = false;
